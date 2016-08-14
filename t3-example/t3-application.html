@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>$title</title>
+</head>
+<body>
+<button data-module="module-test">Test</button>
+<script src="t3.js"></script>
+<script>
+Box.Application.addModule('module-test', function(context) {
+  return {
+    behaviors: ['element-button'],
+    init: function(){
+      console.log('init');
+    }
+  }
+});
+
+Box.Application.addBehavior('element-button', function(context) {
+  return {
+    init: function() {
+      console.log('add behavior');
+      console.log(context.hasService('connectSomething')); //true, checks if a service has been registered.
+      context.getService('connectSomething').connect(); //retrieves an instance of a registered service.
+    }
+  };
+});
+
+Box.Application.addService('connectSomething', function(application) {
+  return {
+    connect: function() {
+      console.log('connect something...');
+    }
+  };
+});
+
+Box.Application.init();
+</script>
+</body>
+</html>

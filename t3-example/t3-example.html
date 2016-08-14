@@ -1,0 +1,91 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>$title</title>
+</head>
+<body>
+<div id="mod-test-module" data-module="test-module" data-hint="click this button to get more info...">
+  <a href="#" data-type="btn-ok">OK</a>
+</div>
+<button id="module-test-domeventdelegate" data-module="module-test-domeventdelegate">Test DOMEventDelegate</button>
+<script src="t3.js"></script>
+<script>
+Box.Application.addService('connectSomething', function(application) {
+  return {
+    connect: function() {
+      //console.log('connect something...');
+    },
+    getHint: function(text) {
+    	console.log(text);
+    }
+  };
+});
+
+Box.Application.addBehavior('element-button', function(context) {
+  var button;
+
+  return {
+    init: function() {
+      //console.log('add behavior');
+      button = context.getService('connectSomething').connect();
+      //getHint = context.getService('connectSomething').getHint(context.data('hint'));
+    }
+  };
+});
+
+Box.Application.addModule('test-module', function(context) {
+	//DOMEventDelegate
+	var element = context.getElement();
+	var delegate = new Box.DOMEventDelegate(element, {
+		onclick: function(event) {
+			console.log(event.type);
+		}
+	});
+
+  return {
+    messages: ['statechanged', 'searchcomplete'],
+    onmessage: function(name, data) {
+      switch(name) {
+        case 'statechanged':
+          //console.log('statechanged');
+          break;
+        case 'searchcomplete':
+          //console.log('searchcomplete: Found ' + data.numResults + ' results.');
+          break;
+      }
+    },
+    behaviors: ['element-button'],
+    init: function(){
+    	var element = context.getElement();
+      //console.log('init');
+      //console.log(element);
+      //console.log(element.getAttribute('data-hint'));
+      delegate.attachEvents(); //DOMEventDelegate
+    },
+    destroy: function(){
+      //console.log('destroy');
+    },
+    onclick: function(event, element, elementType){
+    	//console.log(event);
+      event.preventDefault();
+      if(elementType === 'btn-ok'){
+        console.log('OK!');
+      }
+    }
+  }
+});
+
+var testModule = document.getElementById('mod-test-module');
+Box.Application.start(testModule);
+//Box.Application.stop(testModule);
+//Box.Application.start(testModule);
+
+Box.Application.broadcast('statechanged');
+
+Box.Application.broadcast('searchcomplete', {
+  numResults: 100
+});
+</script>
+</body>
+</html>

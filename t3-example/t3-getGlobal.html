@@ -1,0 +1,24 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>$title</title>
+</head>
+<body>
+<div data-module="module-test">test</div>
+<script src="t3.js"></script>
+<script>
+//取得window
+Box.Application.addModule('module-test', function(context) {
+  return {
+    init: function(){
+      var navigator = context.getGlobal('navigator');
+      console.log(window.navigator.userAgent === navigator.userAgent);
+    }
+  }
+});
+
+Box.Application.init();
+</script>
+</body>
+</html>

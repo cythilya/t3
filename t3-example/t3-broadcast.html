@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>$title</title>
+</head>
+<body>
+<div data-module="module-broadcast-1">1</div>
+<div data-module="module-broadcast-2">2</div>
+<script src="t3.js"></script>
+<script>
+// 模組訂閱事件，當事件發生時會通知模組。
+Box.Application.addModule('module-broadcast-1', function(context) {
+  return {
+    messages: ['broadcast-a', 'broadcast-b'],
+    onmessage: function(name, data) {
+      switch(name) {
+        case 'broadcast-a':
+          console.log('broadcast-a');
+          Box.Application.broadcast('broadcast-b');
+          break;
+        case 'broadcast-b':
+          console.log('broadcast-b');
+          break;
+      }
+    }
+  }
+});
+
+Box.Application.addModule('module-broadcast-2', function(context) {
+  return {
+    messages: ['broadcast-a', 'broadcast-c'],
+    onmessage: function(name, data) {
+      switch(name) {
+        case 'broadcast-a':
+          console.log('broadcast-a');
+          break;
+        case 'broadcast-c':
+          console.log('broadcast-c');
+          break;
+      }
+    },
+  }
+});
+
+Box.Application.init();
+Box.Application.broadcast('broadcast-a');
+Box.Application.broadcast('broadcast-c');
+</script>
+</body>
+</html>

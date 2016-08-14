@@ -1,0 +1,56 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>$title</title>
+</head>
+<body>
+<div id="mod-test-module" data-module="test-module" data-hint="click this button to get more info...">
+  <a href="#" data-type="btn-ok">OK</a>
+</div>
+<script src="t3.js"></script>
+<script>
+Box.Application.addModule('test-module', function(context) {
+  return {
+    messages: ['statechanged', 'statecompleted'],
+    onmessage: function(name, data) {
+      switch(name) {
+        case 'statechanged':
+          console.log('statechanged');
+          break;
+        case 'searchcomplete':
+          console.log('statecompleted: ' + data.numResults + ' tasks completed.');
+          break;
+      }
+    },
+    behaviors: ['get-info'],
+    init: function(){
+      console.log('module init');
+    },
+    onclick: function(event, element, elementType){
+      console.log('click');
+    }
+  }
+});
+
+Box.Application.addService('connectSomething', function(application) {
+  return {
+    connect: function() {
+      console.log('connect something...');
+    }
+  };
+});
+
+Box.Application.addBehavior('get-info', function(context) {
+  return {
+    init: function() {
+      console.log('add behavior');
+      context.getService('connectSomething').connect(); //retrieves an instance of a registered service.
+    }
+  };
+});
+
+Box.Application.init();
+</script>
+</body>
+</html>

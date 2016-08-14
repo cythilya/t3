@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>$title</title>
+</head>
+<body>
+<button data-module="module-test-domeventdelegate">
+  Test DOMEventDelegate
+</button>
+<script src="t3.js"></script>
+<script>
+Box.Application.addModule('module-test-domeventdelegate', function(context) {
+	var element = context.getElement();
+	var delegate = new Box.DOMEventDelegate(element, {
+		onclick: function(event) {
+			console.log('DOMEventDelegate: ' + event.type);
+		}
+	});
+
+  return {
+    init: function(){
+    	var element = context.getElement();
+      delegate.attachEvents(); //DOMEventDelegate
+    },
+    onclick: function(event, element, elementType){
+      console.log('click!');
+    }
+  }
+});
+
+Box.Application.init();
+</script>
+</body>
+</html>

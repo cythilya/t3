@@ -1,0 +1,104 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>$title</title>
+<style>
+.todos-item{
+  margin: 0 0 10px 0;
+}
+</style>
+</head>
+<body>
+<div class="todos">
+  <div data-module="module-add-new-item" id="todos-new-item" class="todos-new-item">
+    <input type="text" name="todosInputNewItem" class="todos-input-new-item" />
+    <button data-type="btn-add-new-item" class="todos-button-add">Add new item</button>
+  </div>
+  <ul data-module="module-todo-list" class="todos-list"></ul>
+</div>
+<script src="jquery-1.8.2.min.js"></script>
+<script src="t3.js"></script>
+<script>
+var todosList = ['Buy one milk', 'Buy two milks'];
+
+Box.Application.addModule('module-add-new-item', function(context) {
+  'use strict';
+  return {
+    init: function() {},
+    onclick: function(event, element, elementType) {
+      var module = document.getElementById('todos-new-item'),
+          input = module.getElementsByClassName('todos-input-new-item')[0],
+          value = input.value;
+
+      if(elementType === 'btn-add-new-item' && value && todosList.indexOf(value) === -1) {
+        todosList.push(value);
+        Box.Application.broadcast('addnewtodo', {
+          name: value
+        });
+      }
+    }
+  }
+});
+
+Box.Application.addModule('module-todo-list', function(context) {
+  'use strict';
+  return {
+    messages: ['addnewtodo'],
+    onmessage: function(name, data) {
+      switch(name) {
+        case 'addnewtodo':
+        this.init();
+          break;
+        default:
+          break;
+      }
+    },
+    init: function() {
+      var $todosList = $('.todos-list');
+      var HTML = '';
+      $.each(todosList, function(index, value) {
+        var todoHTML = '';
+        todoHTML += [
+          '<li class="todos-item">',
+          '  <span class="todos-item-mark">(x)</span>',
+          '  <span class="todos-item-text">' + value + '</span>',
+          //'  <button class="todos-button-edit" data-type="btn-edit">Edit</button>',
+          '  <button class="todos-button-remove" data-type="btn-remove">Remove</button>',
+          '  <button class="todos-button-done" data-type="btn-done">Done</button>',
+          '</li>'
+        ].join('');
+        HTML = HTML + todoHTML;
+      });
+
+      $todosList.html(HTML);
+    },
+    onclick: function(event, element, elementType) {
+      var $btn = $(element),
+          $todoItem = $btn.parents('.todos-item'),
+          value = $todoItem.find('.todos-item-text').text(),
+          index = -1;
+
+    	switch(elementType){
+    		case 'btn-edit':
+    			console.log('edit');
+    			break;
+    		case 'btn-remove':
+          index = todosList.indexOf(value);
+          if (index > -1) {
+            todosList.splice(index, 1);
+          }
+          $todoItem.remove();
+    			break;
+    		case 'btn-done':
+          $todoItem.find('.todos-item-mark').html('(v)');
+    			break;
+    	}
+    }
+  }
+})
+
+Box.Application.init();
+</script>
+</body>
+</html>
