@@ -1,8 +1,14 @@
 # T3
-T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化。如果網站內的程式碼很雜亂的話，很適合用來整理散落在各處的程式碼(尤其是針對大型網站)。而整理方式就是將程式碼分成幾個部份：Application、Module、Serveice、Behavior等來處理。
+T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化。如果網站內的程式碼很雜亂的話，很適合用來整理散落在各處的程式碼(尤其是針對大型網站)。而整理方式就是將程式碼分成幾個部份：Application、Module、Serveice、Behavior等來處理。我把以下的[範例程式碼](https://github.com/cythilya/t3-example)放在Github上(含簡單的TodoList)。
 
-## Modules
-將頁面功能切成模組來運作，例如：頁面上的模組「test-module」，可能需要針對其他模組的反應來做出回應，因此有Message Handling；不同模組但有重覆的事情要做，則可用Behaviors；模組內的事件處理可使用onclick等。然後非UI而是資料處理的事情，則丟給Serveice即可。
+## Module
+將頁面功能切成模組(Module)來運作。如下：頁面上的模組「test-module」，可能需要針對其他模組的反應來做出回應，因此有Message Handling；不同模組但有重覆的事情要做，則可用Behavior；模組內的事件處理可使用onclick等；非UI而是資料處理相關，則丟給Service即可。
+
+### HTML
+
+	<button data-module="test-module">Test</button>
+
+### JS
 
 	Box.Application.addModule('test-module', function(context) {
 	  return {
@@ -17,7 +23,7 @@ T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化�
 	          break;
 	      }
 	    },
-	    behaviors: ['get-info'],
+	    behaviors: ['getInfo'],
 	    init: function(){
 	      console.log('module init');
 	    },
@@ -28,8 +34,8 @@ T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化�
 	  }
 	});
 
-## Serveice
-Module與Behavior只要負責處理好UI，而資料的處理則交給Service，Serveice提供一個與伺服器間溝通的介面。例如：例如使用ajax取資料。例如：「getInfo」這個Service負責與Server端溝通，並將結果回傳給Behavior「getSearchResult」。
+## Service
+Module與Behavior只要負責處理UI，而資料處理則交給Service。Service提供一個與伺服器間溝通的介面。例如：使用ajax取資料。如下範例，「getInfo」這個Service負責與Server端溝通取資料，我們呼叫這個Service的method「getSearchResultByKeyword」，並將結果回傳給Behavior「getSearchResult」。
 
 	Box.Application.addService('getInfo', function(application) {
 	  return {
@@ -65,7 +71,7 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 	Box.Application.init();
 
 ## Behavior
-不同模組但有重覆的事情要做，則可在模組中使用用Behavior。
+不同模組但有重覆的事情要做，則可在模組中使用Behavior。
 
 	Box.Application.addModule('module-test-1', function(context) {
 	  return {
@@ -105,17 +111,15 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 	Box.Application.init();
 
 ## DOMEventDelegate
-委派。
+委派，範例如下。
 
 ### HTML
 
-	<button data-module="module-test-domeventdelegate">
-	  Test DOMEventDelegate
-	</button>
+	<button data-module="module-domeventdelegate">Test DOMEventDelegate</button>
 
 ### JS
 
-	Box.Application.addModule('module-test-domeventdelegate', function(context) {
+	Box.Application.addModule('module-domeventdelegate', function(context) {
 		var element = context.getElement();
 		var delegate = new Box.DOMEventDelegate(element, {
 			onclick: function(event) {
@@ -125,7 +129,7 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 
 	  return {
 	    init: function(){
-	    	var element = context.getElement();
+	      var element = context.getElement();
 	      delegate.attachEvents(); //DOMEventDelegate
 	    },
 	    onclick: function(event, element, elementType){
@@ -138,7 +142,7 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 
 ## Context
 ### broadcast
-模組訂閱事件，當事件發生時會通知模組。
+模組訂閱事件，事件發生時會通知模組。
 
 #### HTML
 
@@ -185,9 +189,13 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 	Box.Application.broadcast('broadcast-c');
 
 ### getGlobal
-取得window。
+取得window物件。
+
+#### HTML
 
 	<div data-module="module-test">test</div>
+
+#### JS
 
 	Box.Application.addModule('module-test', function(context) {
 	  return {
@@ -203,7 +211,11 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 ### getGlobalConfig
 取得 `Box.Application.init` 中的設定物件。
 
+#### HTML
+
 	<div data-module="module-test">test</div>
+
+#### JS
 
 	Box.Application.addModule('module-test', function(context) {
 	  return {
@@ -217,6 +229,7 @@ Module與Behavior只要負責處理好UI，而資料的處理則交給Service，
 		userName: 'Bob'
 	});
 
+---
+這邊我只列出目前比較常用的，而[T3](http://t3js.org/)的文件寫得很詳細，有興趣的話可以看一下。  
 
-[範例程式碼](https://github.com/cythilya/t3-example)
-[T3 JavaScript Framework - T3 JavaScript Framework](http://t3js.org/)
+我也將之前參加駭客松的作品[吃什麼，どっち](https://dotch.herokuapp.com/)部份改版使用T3實作。
