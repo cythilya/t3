@@ -1,8 +1,10 @@
 # T3
-T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化。如果網站內的程式碼很雜亂的話，很適合用來整理散落在各處的程式碼(尤其是針對大型網站)。而整理方式就是將程式碼分成幾個部份：Application、Module、Serveice、Behavior等來處理。我把以下的[範例程式碼](https://github.com/cythilya/t3-example)放在Github上(含簡單的TodoList)。
+T3是一個JavaScript UI Framework，主要的功能是讓程式碼更結構化。如果網站內的程式碼很雜亂的話，很適合用來整理散落在各處的程式碼(尤其是針對年紀大需要翻新的大型網站)。而整理方式就是將程式碼分成幾個部份：Application、Module、Serveice、Behavior等來處理。頁面UI整理成Module，Module彼此共用的方法或事件整理成Behavior，而非UI邏輯且多個Module會共用的部份(例如：與Server端溝通取資料)則抽出來成為Service。
 
 ## Module
-將頁面功能切成模組(Module)來運作。如下：頁面上的模組「test-module」，可能需要針對其他模組的反應來做出回應，因此有Message Handling；不同模組但有重覆的事情要做，則可用Behavior；模組內的事件處理可使用onclick等；非UI而是資料處理相關，則丟給Service即可。
+將頁面功能切成模組(Module)來運作，如果頁面無法切成多個模組就將整個頁面視為一個模組。  
+
+模組的事件有以下幾種：Message Handling、Behavior、Event Handlers(例如：onclick)。如下：頁面上的模組「test-module」，可能需要針對其他模組的反應來做出回應，因此有Message Handling；不同模組但有重覆的事情要做，則可用Behavior；模組內的事件處理可使用onclick等；非UI邏輯的部份丟給Service即可。
 
 ### HTML
 
@@ -35,7 +37,7 @@ T3是一個JavaScript UI framework，主要的功能是讓程式碼更結構化�
 	});
 
 ## Service
-Module與Behavior只要負責處理UI，而資料處理則交給Service。Service提供一個與伺服器間溝通的介面。例如：使用ajax取資料。如下範例，「getInfo」這個Service負責與Server端溝通取資料，我們呼叫這個Service的method「getSearchResultByKeyword」，並將結果回傳給Behavior「getSearchResult」。
+Module與Behavior負責處理UI，而非UI的部份則交給Service。Service可當成一個共用的介面，讓不同的Module和Behavior來共同呼叫。例如：使用ajax取資料。如下範例，「getInfo」這個Service負責與Server端溝通取資料，我們呼叫這個Service的method「getSearchResultByKeyword」，並將結果回傳給Behavior「getSearchResult」。
 
 	Box.Application.addService('getInfo', function(application) {
 	  return {
@@ -90,7 +92,7 @@ Module與Behavior只要負責處理UI，而資料處理則交給Service。Servic
 	    }
 	  }
 	});
-	
+
 	Box.Application.addBehavior('element-button', function(context) {
 	  return {
 	    init: function() {
@@ -99,7 +101,7 @@ Module與Behavior只要負責處理UI，而資料處理則交給Service。Servic
 	    }
 	  };
 	});
-	
+
 	Box.Application.addService('connectSomething', function(application) {
 	  return {
 	    connect: function() {
@@ -107,7 +109,7 @@ Module與Behavior只要負責處理UI，而資料處理則交給Service。Servic
 	    }
 	  };
 	});
-	
+
 	Box.Application.init();
 
 ## DOMEventDelegate
@@ -142,7 +144,7 @@ Module與Behavior只要負責處理UI，而資料處理則交給Service。Servic
 
 ## Context
 ### broadcast
-模組訂閱事件，事件發生時會通知模組。
+模組訂閱事件，事件發生時會通知模組。可用在網站的訊息中心等。
 
 #### HTML
 
@@ -230,6 +232,6 @@ Module與Behavior只要負責處理UI，而資料處理則交給Service。Servic
 	});
 
 ---
-這邊我只列出目前比較常用的，而[T3](http://t3js.org/)的文件寫得很詳細，有興趣的話可以看一下。  
+以上只列出目前比較常用的部份，[T3](http://t3js.org/)的文件寫得很詳細，有興趣的話可以看一下。
 
 我也將之前參加駭客松的作品[吃什麼，どっち](https://dotch.herokuapp.com/)部份改版使用T3實作。
